@@ -1,18 +1,26 @@
-const config = require("../../config");
-let provider;
+const CallService = require("./call.service");
+const PlivoCallProvider = require("./providers/plivoCallProvider.service");
+const TwilioCallProvider = require("./providers/twilioCallProvider.service");
+const plivoAnswers = require("./answers/plivo.answers");
+const twilioAnswers = require("./answers/twilio.answers");
 
-if (config.provider === "plivo") {
-  provider = {
-    service: require("./providers/plivoCallProvider.service"),
-    answers: require("./answers/plivo.answers"),
-  };
-} else if (config.provider === "twilio") {
-  provider = {
-    service: require("./providers/twilioCallProvider.service"),
-    answers: require("./answers/twilio.answers"),
-  };
-} else {
-  logs.log("callService", `Unsupported call provider`);
+function callServiceFactory(provider) {
+  let providerService;
+  let answers;
+
+  switch (provider) {
+    case "plivo":
+      providerService = new PlivoCallProvider();
+      answers = plivoAnswers;
+      break;
+    case "twilio":
+      providerService = new TwilioCallProvider();
+      answers = twilioAnswers;
+      break;
+    default:
+      throw new Error("Unknown provider");
+  }
+  return new CallService(providerService, answers);
 }
 
-module.exports = provider;
+module.exports = callServiceFactory;

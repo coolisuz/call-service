@@ -1,17 +1,20 @@
-const provider = require("./callServiceFactory");
+class CallService {
+  constructor(provider, answers) {
+    this.provider = provider;
+    this.answers = answers;
+  }
 
-const CallService = function () {
-  return {
-    answers: provider.answers,
+  async transfer(CallUUID, options) {
+    return this.provider.transfer(CallUUID, options);
+  }
 
-    async call(from, to, answerUrl, params = {}) {
-      return await provider.service.call(from, to, answerUrl, params);
-    },
+  async makeCall(options) {
+    return this.provider.makeCall(options);
+  }
 
-    async transfer(CallUUID, params = {}) {
-      return await provider.service.transfer(CallUUID, params);
-    },
-  };
-};
+  getAnswer(name, params) {
+    return this.answers[name] ? this.answers[name](params) : null;
+  }
+}
 
 module.exports = CallService;

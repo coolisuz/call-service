@@ -1,20 +1,21 @@
-const plivo = require('plivo');
+const plivo = require("plivo");
 const PlivoAnswers = require("../answers/plivo.answers");
+const config = require("../../../.env");
 
-const PlivoCallProvider = function(id, token) {
-    const client = new plivo.Client(id, token);
+const PlivoCallProvider = function (id, token) {
+  const client = new plivo.Client(config.plivo.authId, config.plivo.authToken);
 
-    return {
-        answers: PlivoAnswers,
+  return {
+    answers: PlivoAnswers,
 
-        async call(from, to, answerUrl, params = {}) {
-            return await client.calls.create(from, to, answerUrl, params);
-        },
+    async call(from, to, answerUrl, params = {}) {
+      return await client.calls.create(from, to, answerUrl, params);
+    },
 
-        async transfer(CallUUID, params = {}) {
-            return await client.calls.transfer(CallUUID, params);
-        }
-    }
-}
+    async transfer(CallUUID, params = {}) {
+      return await client.calls.transfer(CallUUID, params);
+    },
+  };
+};
 
 module.exports = PlivoCallProvider;
